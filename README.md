@@ -11,7 +11,6 @@ Build an AI-powered system that evaluates resume relevance against job descripti
 
 ## 🛠️ Installation
 
-### Backend
 ```bash
 cd backend
 pip install -r requirements.txt

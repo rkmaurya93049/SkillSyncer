@@ -27,40 +27,22 @@ BBASE_URL = "https://huggingface.co/spaces/rkmaurya/skillsyncer"
 
 
 
-# --- Helper Functions ---
+
 def analyze_resume(jd_text, jd_file, resume_file):
     files = {
         "resume_file": (resume_file.name, resume_file.getvalue(), resume_file.type)
     }
-
     if jd_file:
         files["jd_file"] = (jd_file.name, jd_file.getvalue(), jd_file.type)
-        data = {}
     else:
         files["jd_file"] = ("jd.txt", jd_text.encode("utf-8"), "text/plain")
-        data = {}
+    return requests.post(f"{BASE_URL}/evaluate/", files=files).json()
 
-    try:
-        response = requests.post(f"{BASE_URL}/", files=files, data=data)
-        response.raise_for_status()
+def fetch_history(params=None):
+    return requests.get(f"{BASE_URL}/evaluate/history", params=params).json()
 
-        try:
-            result = response.json()
-        except requests.exceptions.JSONDecodeError:
-            st.error("❌ Backend returned non-JSON response.")
-            st.text(response.text)
-            return None
-
-        if result and isinstance(result, dict) and "score" in result:
-            return result
-        else:
-            st.error("❌ Backend returned unexpected data format.")
-            st.text(response.text)
-            return None
-
-    except requests.exceptions.RequestException as e:
-        st.error(f"❌ Request failed: {e}")
-        return None
+def fetch_detail(result_id):
+    return requests.get(f"{BASE_URL}/evaluate/{result_id}").json()
 
 def fetch_history(params=None):
     try:
@@ -193,6 +175,7 @@ elif "Recruiter" in tab:
 
 # --- Footer ---
 render_footer()
+
 
 
 

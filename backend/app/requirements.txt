@@ -16,3 +16,4 @@ langsmith
 chromadb
 langchain-google-genai
 google-generativeai
+PyMuPDF==1.22.3

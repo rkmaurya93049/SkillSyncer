@@ -1,13 +1,13 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from ..services.parsing import extract_text
-from ..services.jd_structuring import jd_structuring
-from ..services.resume_matching import compute_hard_match
-from ..services.scoring import compute_semantic_similarity, compute_score
-from ..services.suggestions import generate_suggestions
+from services.parsing import extract_text
+from services.jd_structuring import jd_structuring
+from services.resume_matching import compute_hard_match
+from services.scoring import compute_semantic_similarity, compute_score
+from services.suggestions import generate_suggestions
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from backend.app.db.session import SessionLocal
-from backend.app.models.evaluation import ResumeEvaluation
+from session import SessionLocal
+from models.evaluation import ResumeEvaluation
 from fastapi import Query
 from datetime import datetime
 import csv
@@ -43,9 +43,7 @@ async def evaluate(jd_file: UploadFile = File(...), resume_file: UploadFile = Fi
         score=score_result["final_score"]
     )
 
-    # ✅ Step 5: Save to DB — place this here
-    from backend.app.db.session import SessionLocal
-    from backend.app.models.evaluation import ResumeEvaluation
+ 
 
     db = SessionLocal()
     record = ResumeEvaluation(
@@ -195,4 +193,5 @@ def get_evaluation_by_id(id: int, db: Session = Depends(get_db)):
     "missing_skills": record.missing_must_have,
     "feedback": "\n".join(record.suggestions.get("resume_fixes", [])),  # ✅ This line
     "timestamp": record.timestamp.isoformat()
+
 }

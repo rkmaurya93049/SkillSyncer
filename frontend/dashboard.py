@@ -26,29 +26,42 @@ tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recr
 BASE_URL = "https://skillsyncer--rkmaurya.hf.space"
 
 # --- Helper Functions ---
+import requests
+import streamlit as st
+
 def analyze_resume(jd_text, jd_file, resume_file):
+    BASE_URL = "https://skillsyncer-backend.hf.space/evaluate"  # ✅ Use full backend endpoint
+
+    # Prepare files for upload
     files = {
         "resume_file": (resume_file.name, resume_file.getvalue(), resume_file.type)
     }
+
     if jd_file:
         files["jd_file"] = (jd_file.name, jd_file.getvalue(), jd_file.type)
+        data = {}  # No need for jd_text if jd_file is provided
     else:
         files["jd_file"] = ("jd.txt", jd_text.encode("utf-8"), "text/plain")
+        data = {}  # You can include jd_text in data if backend expects it separately
 
     try:
-        response = requests.post(f"{BASE_URL}/", files=files)
+        response = requests.post(BASE_URL, files=files, data=data)
         response.raise_for_status()
-        result = response.json()
-        if result and "score" in result:
-            return result
-        else:
-            st.error("❌ Backend returned unexpected data")
+
+        try:
+            result = response.json()
+        except requests.exceptions.JSONDecodeError:
+            st.error("❌ Backend returned non-JSON response.")
             st.text(response.text)
             return None
-    except requests.exceptions.JSONDecodeError:
-        st.error("❌ Backend returned non-JSON response. Here's the raw output:")
-        st.text(response.text)
-        return None
+
+        if result and isinstance(result, dict) and "score" in result:
+            return result
+        else:
+            st.error("❌ Backend returned unexpected data format.")
+            st.text(response.text)
+            return None
+
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Request failed: {e}")
         return None
@@ -173,6 +186,7 @@ elif "Recruiter" in tab:
 # --- Footer ---
 
 render_footer()
+
 
 
 

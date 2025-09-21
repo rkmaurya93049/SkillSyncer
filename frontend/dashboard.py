@@ -23,29 +23,23 @@ st.markdown("""
 tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recruiter Dashboard"])
 
 # --- Backend URL ---
-BBASE_URL = "https://skillsyncer-backend.hf.space"
+BASE_URL = "https://skillsyncer-backend.hf.space/evaluate"
 
 # --- Helper Functions ---
-import requests
-import streamlit as st
-
 def analyze_resume(jd_text, jd_file, resume_file):
-    BASE_URL = "https://skillsyncer-backend.hf.space/evaluate"  # ✅ Use full backend endpoint
-
-    # Prepare files for upload
     files = {
         "resume_file": (resume_file.name, resume_file.getvalue(), resume_file.type)
     }
 
     if jd_file:
         files["jd_file"] = (jd_file.name, jd_file.getvalue(), jd_file.type)
-        data = {}  # No need for jd_text if jd_file is provided
+        data = {}
     else:
         files["jd_file"] = ("jd.txt", jd_text.encode("utf-8"), "text/plain")
-        data = {}  # You can include jd_text in data if backend expects it separately
+        data = {}
 
     try:
-        response = requests.post(BASE_URL, files=files, data=data)
+        response = requests.post(f"{BASE_URL}/", files=files, data=data)
         response.raise_for_status()
 
         try:
@@ -66,12 +60,23 @@ def analyze_resume(jd_text, jd_file, resume_file):
         st.error(f"❌ Request failed: {e}")
         return None
 
-
 def fetch_history(params=None):
-    return requests.get(f"{BASE_URL}/evaluate/history", params=params).json()
+    try:
+        response = requests.get(f"{BASE_URL}/history", params=params)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        st.error(f"❌ Failed to fetch history: {e}")
+        return []
 
 def fetch_detail(result_id):
-    return requests.get(f"{BASE_URL}/evaluate/{result_id}").json()
+    try:
+        response = requests.get(f"{BASE_URL}/{result_id}")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        st.error(f"❌ Failed to fetch detail: {e}")
+        return {}
 
 # --- Student Portal ---
 if "Student" in tab:
@@ -97,27 +102,28 @@ if "Student" in tab:
     if st.button("🚀 Evaluate Resume"):
         if resume_file and (jd_file or jd_text):
             result = analyze_resume(jd_text, jd_file, resume_file)
-            st.success(f"✅ Evaluation Complete for {resume_file.name}")
-            st.progress(result["score"] / 100, text=f"Score: {result['score']}%")
+            if result:
+                st.success(f"✅ Evaluation Complete for {resume_file.name}")
+                st.progress(result["score"] / 100, text=f"Score: {result['score']}%")
 
-            verdict = result["verdict"]
-            if verdict == "High":
-                st.success("Verdict: High Suitability 👍")
-            elif verdict == "Medium":
-                st.warning("Verdict: Medium Suitability 🤔")
-            else:
-                st.error("Verdict: Low Suitability 👎")
+                verdict = result["verdict"]
+                if verdict == "High":
+                    st.success("Verdict: High Suitability 👍")
+                elif verdict == "Medium":
+                    st.warning("Verdict: Medium Suitability 🤔")
+                else:
+                    st.error("Verdict: Low Suitability 👎")
 
-            st.markdown("### 🔧 Suggestions")
-            st.markdown("**Resume Fixes:**")
-            for fix in result["suggestions"]["resume_fixes"]:
-                st.markdown(f"- {fix}")
-            st.markdown("**Skills to Add:**")
-            for skill in result["suggestions"]["skills_to_add"]:
-                st.markdown(f"- {skill}")
-            st.markdown("**Experience Suggestions:**")
-            for exp in result["suggestions"]["experience_suggestions"]:
-                st.markdown(f"- {exp}")
+                st.markdown("### 🔧 Suggestions")
+                st.markdown("**Resume Fixes:**")
+                for fix in result["suggestions"]["resume_fixes"]:
+                    st.markdown(f"- {fix}")
+                st.markdown("**Skills to Add:**")
+                for skill in result["suggestions"]["skills_to_add"]:
+                    st.markdown(f"- {skill}")
+                st.markdown("**Experience Suggestions:**")
+                for exp in result["suggestions"]["experience_suggestions"]:
+                    st.markdown(f"- {exp}")
         else:
             st.error("Please upload both resume and JD (file or text).")
 
@@ -184,15 +190,4 @@ elif "Recruiter" in tab:
         st.info("No evaluations found.")
 
 # --- Footer ---
-
 render_footer()
-
-
-
-
-
-
-
-
-
-

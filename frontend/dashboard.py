@@ -36,9 +36,15 @@ def analyze_resume(jd_text, jd_file, resume_file):
         files["jd_file"] = ("jd.txt", jd_text.encode("utf-8"), "text/plain")
 
     try:
-        response = requests.post(f"{BASE_URL}/evaluate/", files=files)
-        response.raise_for_status()  # raises HTTPError for 4xx/5xx
-        return response.json()
+        response = requests.post(f"{BASE_URL}/", files=files)
+        response.raise_for_status()
+        result = response.json()
+        if result and "score" in result:
+            return result
+        else:
+            st.error("❌ Backend returned unexpected data")
+            st.text(response.text)
+            return None
     except requests.exceptions.JSONDecodeError:
         st.error("❌ Backend returned non-JSON response. Here's the raw output:")
         st.text(response.text)
@@ -46,6 +52,7 @@ def analyze_resume(jd_text, jd_file, resume_file):
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Request failed: {e}")
         return None
+
 
 def fetch_history(params=None):
     return requests.get(f"{BASE_URL}/evaluate/history", params=params).json()
@@ -166,6 +173,7 @@ elif "Recruiter" in tab:
 # --- Footer ---
 
 render_footer()
+
 
 
 

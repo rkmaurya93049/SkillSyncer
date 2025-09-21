@@ -18,4 +18,3 @@ langsmith
 chromadb
 langchain-google-genai
 google-generativeai
-

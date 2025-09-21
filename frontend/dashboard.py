@@ -25,7 +25,6 @@ tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recr
 # --- Backend URL ---
 BASE_URL = "https://skillsyncer-backend.hf.space/evaluate"
 
-response = requests.post(BASE_URL, files=files)
 
 # --- Helper Functions ---
 def analyze_resume(jd_text, jd_file, resume_file):
@@ -193,4 +192,5 @@ elif "Recruiter" in tab:
 
 # --- Footer ---
 render_footer()
+
 

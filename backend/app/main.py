@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import upload
-from .routers import evaluation
+from routers import upload
+from routers import evaluation
 
 app = FastAPI(title="Resume Relevance MVP", version="0.1.0")
 
@@ -18,4 +18,5 @@ app.include_router(evaluation.router)
 
 @app.get("/health")
 def health():
+
     return {"status": "ok"}

@@ -12,7 +12,5 @@ pydantic==2.8.2
 streamlit
 langchain
 langgraph
-chromadb
 langchain-google-genai
-google-generativeai
 PyMuPDF==1.22.3

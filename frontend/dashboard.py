@@ -23,7 +23,7 @@ st.markdown("""
 tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recruiter Dashboard"])
 
 # --- Backend URL ---
-BASE_URL = "http://localhost:8000"
+BASE_URL = "https://huggingface.co/spaces/rkmaurya/skillsyncer"
 
 # --- Helper Functions ---
 def analyze_resume(jd_text, jd_file, resume_file):
@@ -155,3 +155,4 @@ elif "Recruiter" in tab:
 # --- Footer ---
 
 render_footer()
+

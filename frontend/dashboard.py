@@ -11,13 +11,7 @@ st.set_page_config(page_title="Resume Relevance Checker", layout="wide", page_ic
 render_header()
 
 # --- Logo + Tagline ---
-st.markdown("""
-    <div style='text-align: center; margin-top: -10px; margin-bottom: 20px;'>
-        <img src='https://raw.githubusercontent.com/your-username/your-repo/main/assets/logo.png' width='100'>
-        <h2 style='color:#4f46e5;'>SkillSyncer Dashboard</h2>
-        <p style='color:gray;'>AI-powered resume evaluation for students and recruiters</p>
-    </div>
-""", unsafe_allow_html=True)
+
 
 # --- View Selector ---
 tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recruiter Dashboard"])
@@ -175,6 +169,7 @@ elif "Recruiter" in tab:
 
 # --- Footer ---
 render_footer()
+
 
 
 

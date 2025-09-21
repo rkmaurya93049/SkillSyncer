@@ -23,7 +23,8 @@ st.markdown("""
 tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recruiter Dashboard"])
 
 # --- Backend URL ---
-BASE_URL = "https://skillsyncer-backend.hf.space/evaluate"
+BBASE_URL = "https://huggingface.co/spaces/rkmaurya/skillsyncer"
+
 
 
 # --- Helper Functions ---
@@ -192,5 +193,6 @@ elif "Recruiter" in tab:
 
 # --- Footer ---
 render_footer()
+
 
 

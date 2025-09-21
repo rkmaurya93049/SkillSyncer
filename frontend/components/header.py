@@ -30,7 +30,7 @@ def render_header():
         </style>
 
         <div class="app-bar">
-            <h1>🚀 Resume Relevance Dashboard — Team Solo Leveler</h1>
+            <h1>🚀 SkillSyncer Dashboard — Team Solo Leveler</h1>
             <div class="nav-links">
                 <a href="https://www.linkedin.com/in/raushan-kumar-74209b253/" target="_blank">LinkedIn</a>
                 <a href="https://github.com/rkmaurya93049" target="_blank">GitHub</a>
@@ -38,4 +38,5 @@ def render_header():
             </div>
         </div>
     """, unsafe_allow_html=True)
+
 

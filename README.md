@@ -10,6 +10,7 @@ Build an AI-powered system that evaluates resume relevance against job descripti
 - **DB**: history saving for the future analysis of the resumes
 - **BackendDeployment**: Using Hugging Face
 ## 🛠️ Installation
+-**env**:add .env file before running this which contain GEMNINI_API_KEY
 
 ```bash
 cd backend

@@ -26,7 +26,7 @@ tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recr
 BASE_URL = "https://skillsyncer--rkmaurya.hf.space"
 
 # --- Helper Functions ---
-ef analyze_resume(jd_text, jd_file, resume_file):
+def analyze_resume(jd_text, jd_file, resume_file):
     files = {
         "resume_file": (resume_file.name, resume_file.getvalue(), resume_file.type)
     }
@@ -166,6 +166,7 @@ elif "Recruiter" in tab:
 # --- Footer ---
 
 render_footer()
+
 
 
 

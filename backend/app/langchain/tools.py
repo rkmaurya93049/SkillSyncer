@@ -1,9 +1,9 @@
 from langchain.tools import tool
-from ..services.parsing import extract_text
-from ..services.jd_structuring import jd_structuring
-from ..services.resume_matching import compute_hard_match
-from ..services.scoring import compute_semantic_similarity, compute_score
-from ..services.suggestions import generate_suggestions
+from services.parsing import extract_text
+from services.jd_structuring import jd_structuring
+from services.resume_matching import compute_hard_match
+from services.scoring import compute_semantic_similarity, compute_score
+from services.suggestions import generate_suggestions
 
 @tool
 def evaluate_resume(jd_text: str, resume_text: str) -> dict:
@@ -25,4 +25,5 @@ def evaluate_resume(jd_text: str, resume_text: str) -> dict:
         "suggestions": suggestions,
         "missing_must_have": hard_features["missing_must_have"],
         "semantic_similarity": hard_features["semantic_similarity"]
+
     }

@@ -2,7 +2,6 @@ fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9
 pdfplumber==0.11.4
-pymupdf==1.24.9
 docx2txt
 spacy==3.7.5
 rapidfuzz==3.9.6
@@ -18,3 +17,4 @@ langsmith
 chromadb
 langchain-google-genai
 google-generativeai
+

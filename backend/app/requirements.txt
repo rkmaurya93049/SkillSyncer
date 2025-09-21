@@ -12,7 +12,6 @@ pydantic==2.8.2
 streamlit
 langchain
 langgraph
-langsmith
 chromadb
 langchain-google-genai
 google-generativeai

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from ..services.parsing import extract_text
-from ..services.jd_structuring import jd_structuring
+from services.parsing import extract_text
+from services.jd_structuring import jd_structuring
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
@@ -22,4 +22,5 @@ async def upload_jd(file: UploadFile = File(...)):
         "degrees": structured["degrees"],
         "chars": len(result["raw_text"]),
         "sample": result["raw_text"][:600]
+
     }

@@ -3,11 +3,11 @@ from langgraph.graph import StateGraph, END
 from typing import TypedDict
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.app.services.parsing import extract_text
-from backend.app.services.jd_structuring import jd_structuring
-from backend.app.services.resume_matching import compute_hard_match
-from backend.app.services.scoring import compute_semantic_similarity, compute_score
-from backend.app.services.suggestions import generate_suggestions
+from services.parsing import extract_text
+from services.jd_structuring import jd_structuring
+from services.resume_matching import compute_hard_match
+from services.scoring import compute_semantic_similarity, compute_score
+from services.suggestions import generate_suggestions
 # Configure Gemini
 load_dotenv()  # Load variables from your .env file
 
@@ -69,5 +69,6 @@ graph.add_edge("parse_jd", "parse_resume")
 graph.add_edge("parse_resume", "match_and_score")
 graph.add_edge("match_and_score", "suggest")
 graph.add_edge("suggest", END)
+
 
 resume_graph = graph.compile()

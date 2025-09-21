@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile
-from backend.app.langchain.graph import resume_graph
+from langchain.graph import resume_graph
 
 router = APIRouter()
 
@@ -17,4 +17,5 @@ async def evaluate_graph(jd: UploadFile, resume: UploadFile):
         "score": result["score"]["final_score"],
         "verdict": result["score"]["verdict"],
         "suggestions": result["suggestions"]
+
     }

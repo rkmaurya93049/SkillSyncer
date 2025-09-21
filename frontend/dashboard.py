@@ -26,7 +26,7 @@ tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recr
 BASE_URL = "https://skillsyncer--rkmaurya.hf.space"
 
 # --- Helper Functions ---
-def analyze_resume(jd_text, jd_file, resume_file):
+ef analyze_resume(jd_text, jd_file, resume_file):
     files = {
         "resume_file": (resume_file.name, resume_file.getvalue(), resume_file.type)
     }
@@ -34,7 +34,18 @@ def analyze_resume(jd_text, jd_file, resume_file):
         files["jd_file"] = (jd_file.name, jd_file.getvalue(), jd_file.type)
     else:
         files["jd_file"] = ("jd.txt", jd_text.encode("utf-8"), "text/plain")
-    return requests.post(f"{BASE_URL}/evaluate/", files=files).json()
+
+    try:
+        response = requests.post(f"{BASE_URL}/evaluate/", files=files)
+        response.raise_for_status()  # raises HTTPError for 4xx/5xx
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        st.error("❌ Backend returned non-JSON response. Here's the raw output:")
+        st.text(response.text)
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"❌ Request failed: {e}")
+        return None
 
 def fetch_history(params=None):
     return requests.get(f"{BASE_URL}/evaluate/history", params=params).json()
@@ -155,6 +166,7 @@ elif "Recruiter" in tab:
 # --- Footer ---
 
 render_footer()
+
 
 
 

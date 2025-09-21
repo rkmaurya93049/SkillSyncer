@@ -14,7 +14,7 @@ render_header()
 st.markdown("""
     <div style='text-align: center; margin-top: -10px; margin-bottom: 20px;'>
         <img src='https://raw.githubusercontent.com/your-username/your-repo/main/assets/logo.png' width='100'>
-        <h2 style='color:#4f46e5;'>Resume Relevance Dashboard</h2>
+        <h2 style='color:#4f46e5;'>SkillSyncer Dashboard</h2>
         <p style='color:gray;'>AI-powered resume evaluation for students and recruiters</p>
     </div>
 """, unsafe_allow_html=True)
@@ -153,4 +153,5 @@ elif "Recruiter" in tab:
         st.info("No evaluations found.")
 
 # --- Footer ---
+
 render_footer()

@@ -8,7 +8,7 @@ Build an AI-powered system that evaluates resume relevance against job descripti
 - **Backend**: FastAPI service for resume evaluation
 - **Scoring**: Based on skill matching, experience, and JD alignment
 - **DB**: history saving for the future analysis of the resumes
-
+- **BackendDeployment**: Using Hugging Face
 ## 🛠️ Installation
 
 ```bash

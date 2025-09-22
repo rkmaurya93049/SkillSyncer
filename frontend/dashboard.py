@@ -17,7 +17,7 @@ render_header()
 tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recruiter Dashboard"])
 
 # --- Backend URL ---
-BASE_URL = "http://0.0.0.0:7860"
+BASE_URL = "https://skillsyncer-rkmaurya.hf.space"
 
 
 
@@ -169,6 +169,7 @@ elif "Recruiter" in tab:
 
 # --- Footer ---
 render_footer()
+
 
 
 

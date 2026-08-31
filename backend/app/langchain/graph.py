@@ -1,27 +1,14 @@
-import os
-from langgraph.graph import StateGraph, END
 from typing import TypedDict
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.app.services.parsing import extract_text
-from backend.app.services.jd_structuring import jd_structuring
-from backend.app.services.resume_matching import compute_hard_match
-from backend.app.services.scoring import compute_semantic_similarity, compute_score
-from backend.app.services.suggestions import generate_suggestions
-# Configure Gemini
-load_dotenv()  # Load variables from your .env file
 
-api_key = os.getenv("GEMINI_API_KEY")  # Safely access your key
+from langgraph.graph import END, StateGraph
 
-model = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",  # ✅ Make sure this model is available
-    temperature=0.1,
-    max_output_tokens=1000,
-    google_api_key=api_key     # ✅ This is what tells LangChain to use your key
-)
+from ..services.jd_structuring import jd_structuring
+from ..services.parsing import extract_text
+from ..services.resume_matching import compute_hard_match
+from ..services.scoring import compute_score, compute_semantic_similarity
+from ..services.suggestions import generate_suggestions
 
 
-# Define state schema
 class ResumeState(TypedDict):
     jd_text: str
     resume_text: str
@@ -29,35 +16,39 @@ class ResumeState(TypedDict):
     resume_sections: dict
     features: dict
     score: dict
-    suggestions: str
+    suggestions: dict
 
-# Node 1: Parse JD
+
 def parse_jd(state: ResumeState) -> ResumeState:
-    jd_result = extract_text("jd.docx", state["jd_text"])
+    jd_result = extract_text("jd.txt", state["jd_text"].encode("utf-8"))
     jd_struct = jd_structuring(jd_result["raw_text"], jd_result["sections"])
     return {**state, "jd_struct": jd_struct}
 
-# Node 2: Parse Resume
+
 def parse_resume(state: ResumeState) -> ResumeState:
-    resume_result = extract_text("resume.pdf", state["resume_text"])
+    resume_result = extract_text("resume.txt", state["resume_text"].encode("utf-8"))
     return {**state, "resume_sections": resume_result["sections"]}
 
-# Node 3: Match & Score
+
 def match_and_score(state: ResumeState) -> ResumeState:
     features = compute_hard_match(state["jd_struct"], state["resume_sections"])
-    features["semantic_similarity"] = compute_semantic_similarity(state["jd_text"], state["resume_sections"])
+    features["semantic_similarity"] = compute_semantic_similarity(
+        state["jd_text"],
+        state["resume_sections"],
+    )
     score = compute_score(features)
     return {**state, "features": features, "score": score}
+
 
 def suggest_improvements(state: ResumeState) -> ResumeState:
     suggestions = generate_suggestions(
         missing_skills=state["features"]["missing_must_have"],
         role=state["jd_struct"]["title"],
-        score=state["score"]["final_score"]  # ✅ Pass the score here
+        score=state["score"]["final_score"],
     )
     return {**state, "suggestions": suggestions}
 
-# Build LangGraph
+
 graph = StateGraph(ResumeState)
 graph.add_node("parse_jd", parse_jd)
 graph.add_node("parse_resume", parse_resume)

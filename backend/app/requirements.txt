@@ -4,6 +4,7 @@ python-multipart==0.0.9
 pdfplumber==0.11.4
 pymupdf==1.24.9
 docx2txt
+python-dotenv>=1.0,<2
 spacy==3.7.5
 rapidfuzz==3.9.6
 sentence-transformers==3.0.1

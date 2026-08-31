@@ -14,7 +14,7 @@ tab = st.selectbox("🔀 Switch View", ["🎓 Student Portal", "🧑‍💼 Recr
 
 BASE_URL = os.getenv(
     "SKILLSYNCER_API_URL",
-    "https://skillsyncer-rkmaurya.hf.space",
+    "https://rkmaurya-skillsyncer.hf.space",
 ).rstrip("/")
 REQUEST_TIMEOUT = 90
 

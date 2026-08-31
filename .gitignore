@@ -1,33 +1,43 @@
-
----
-
-## ✅ `.gitignore`
-
-This file tells Git which files/folders to ignore. Here’s a solid default for Python + Streamlit:
-
-```gitignore
-# Python
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
-*.egg
-*.egg-info/
-dist/
-build/
-*.log
+*$py.class
 
 # Virtual environments
 .venv/
-env/
 venv/
+env/
+ENV/
 
-# Streamlit
-.streamlit/config.toml
+# Packaging / build output
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Streamlit local configuration / secrets
 .streamlit/secrets.toml
 
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDEs
+# IDE/editor files
 .vscode/
 .idea/
+*.code-workspace
+
+# OS-generated files
+.DS_Store
+Thumbs.db

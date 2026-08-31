@@ -25,6 +25,19 @@ def get_db():
         db.close()
 
 
+def _validate_extraction(result: dict, label: str) -> None:
+    if result.get("filetype") == "unsupported":
+        raise HTTPException(
+            status_code=415,
+            detail=f"{label}: {result.get('error') or 'Unsupported file type.'}",
+        )
+    if not result.get("raw_text"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to extract readable text from the {label.lower()}.",
+        )
+
+
 @router.post("/")
 async def evaluate(
     jd_file: UploadFile = File(...),
@@ -37,12 +50,12 @@ async def evaluate(
     jd_result = extract_text(jd_file.filename or "jd.txt", jd_bytes)
     resume_result = extract_text(resume_file.filename or "resume.txt", resume_bytes)
 
-    if not jd_result.get("raw_text") or not resume_result.get("raw_text"):
-        raise HTTPException(status_code=400, detail="Failed to extract text from one or both files.")
+    _validate_extraction(jd_result, "Job description")
+    _validate_extraction(resume_result, "Resume")
 
     jd_struct = jd_structuring(jd_result["raw_text"], jd_result["sections"])
     hard_features = compute_hard_match(jd_struct, resume_result["sections"])
-    semantic_score = compute_semantic_similarity(jd_result["raw_text"], resume_result["sections"])
+    semantic_score = compute_semantic_similarity(jd_result["raw_text"], resume_result["raw_text"])
     hard_features["semantic_similarity"] = semantic_score
     score_result = compute_score(hard_features)
     suggestions = generate_suggestions(

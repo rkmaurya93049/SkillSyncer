@@ -30,6 +30,11 @@ htmlcov/
 .env.*
 !.env.example
 
+# Local databases / runtime state
+*.db
+*.sqlite
+*.sqlite3
+
 # Streamlit local configuration / secrets
 .streamlit/secrets.toml
 

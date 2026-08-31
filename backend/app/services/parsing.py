@@ -1,42 +1,44 @@
 import io
 import re
+from pathlib import Path
 from typing import Dict, Optional
-import pdfplumber
-import fitz  
+
 import docx2txt
+import fitz
+import pdfplumber
 
 SECTION_HEADERS = [
     "summary", "objective", "skills", "technical skills", "experience",
     "work experience", "professional experience", "projects", "education",
     "certifications", "achievements", "publications"
 ]
+SUPPORTED_FILETYPES = {"pdf", "docx", "txt"}
+
 
 def clean_text(text: str) -> str:
     text = text.replace("\x00", " ")
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    text = text.strip()
-    return text
+    return text.strip()
+
 
 def extract_text_pdfplumber(file_bytes: bytes) -> Optional[str]:
     try:
         with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
             pages = [page.extract_text(x_tolerance=1, y_tolerance=1) or "" for page in pdf.pages]
-        text = "\n".join(pages)
-        return clean_text(text)
+        return clean_text("\n".join(pages))
     except Exception:
         return None
+
 
 def extract_text_pymupdf(file_bytes: bytes) -> Optional[str]:
     try:
         doc = fitz.open(stream=file_bytes, filetype="pdf")
-        blocks = []
-        for page in doc:
-            blocks.append(page.get_text("text"))
-        text = "\n".join(blocks)
-        return clean_text(text)
+        blocks = [page.get_text("text") for page in doc]
+        return clean_text("\n".join(blocks))
     except Exception:
         return None
+
 
 def extract_text_docx(file_bytes: bytes) -> Optional[str]:
     try:
@@ -45,24 +47,26 @@ def extract_text_docx(file_bytes: bytes) -> Optional[str]:
     except Exception:
         return None
 
+
 def detect_filetype(filename: str) -> str:
-    name = filename.lower()
-    if name.endswith(".pdf"):
+    suffix = Path(filename or "").suffix.lower()
+    if suffix == ".pdf":
         return "pdf"
-    if name.endswith(".docx"):
+    if suffix == ".docx":
         return "docx"
-    return "txt"
+    if suffix == ".txt":
+        return "txt"
+    return "unsupported"
+
 
 def heuristic_section_split(text: str) -> Dict[str, str]:
     lines = [ln.strip() for ln in text.splitlines()]
     indices = []
     for i, ln in enumerate(lines):
         ln_low = ln.lower().strip(":")
-        if ln_low in SECTION_HEADERS or any(
-            ln_low.startswith(h) for h in SECTION_HEADERS
-        ):
+        if ln_low in SECTION_HEADERS or any(ln_low.startswith(h) for h in SECTION_HEADERS):
             indices.append((i, ln_low))
-    # Append end sentinel
+
     indices.append((len(lines), "END"))
 
     sections = {}
@@ -73,13 +77,22 @@ def heuristic_section_split(text: str) -> Dict[str, str]:
         header_key = header.replace(" ", "_")
         if content:
             sections[header_key] = content
-    # Fallbacks
+
     if "skills" not in sections and "technical_skills" in sections:
         sections["skills"] = sections["technical_skills"]
     return sections
 
+
 def extract_text(filename: str, file_bytes: bytes) -> Dict:
     ftype = detect_filetype(filename)
+    if ftype not in SUPPORTED_FILETYPES:
+        return {
+            "filetype": "unsupported",
+            "raw_text": "",
+            "sections": {},
+            "error": "Unsupported file type. Upload a PDF, DOCX, or TXT document.",
+        }
+
     text = ""
     if ftype == "pdf":
         text = extract_text_pdfplumber(file_bytes) or ""
@@ -87,16 +100,17 @@ def extract_text(filename: str, file_bytes: bytes) -> Dict:
             text = extract_text_pymupdf(file_bytes) or ""
     elif ftype == "docx":
         text = extract_text_docx(file_bytes) or ""
-    else:
-        # raw bytes as utf-8 if plain text
+    elif ftype == "txt":
         try:
-            text = file_bytes.decode("utf-8", errors="ignore")
+            text = file_bytes.decode("utf-8", errors="replace")
         except Exception:
             text = ""
+
     text = clean_text(text or "")
     sections = heuristic_section_split(text) if text else {}
     return {
         "filetype": ftype,
         "raw_text": text,
-        "sections": sections
+        "sections": sections,
+        "error": None,
     }

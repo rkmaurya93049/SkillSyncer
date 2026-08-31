@@ -1,15 +1,23 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from ..services.parsing import extract_text
+from fastapi import APIRouter, File, HTTPException, UploadFile
+
 from ..services.jd_structuring import jd_structuring
+from ..services.parsing import extract_text
 
 router = APIRouter(prefix="/upload", tags=["upload"])
+
 
 @router.post("/jd")
 async def upload_jd(file: UploadFile = File(...)):
     content = await file.read()
-    result = extract_text(file.filename, content)
+    result = extract_text(file.filename or "jd.txt", content)
+
+    if result.get("filetype") == "unsupported":
+        raise HTTPException(
+            status_code=415,
+            detail=result.get("error") or "Unsupported file type.",
+        )
     if not result.get("raw_text"):
-        raise HTTPException(status_code=400, detail="Unable to extract text from file.")
+        raise HTTPException(status_code=400, detail="Unable to extract readable text from file.")
 
     structured = jd_structuring(result["raw_text"], result["sections"])
 
@@ -21,5 +29,5 @@ async def upload_jd(file: UploadFile = File(...)):
         "years_required": structured["years_required"],
         "degrees": structured["degrees"],
         "chars": len(result["raw_text"]),
-        "sample": result["raw_text"][:600]
+        "sample": result["raw_text"][:600],
     }

@@ -11,12 +11,11 @@ sentence-transformers==3.0.1
 numpy==1.26.4
 scikit-learn==1.5.1
 sqlalchemy==2.0.32
-pydantic==2.8.2
+pydantic>=2.8,<3
 streamlit
 langchain
 langgraph
 langsmith
 chromadb
-langchain-google-genai
-google-generativeai
+langchain-google-genai==4.3.7
 matplotlib

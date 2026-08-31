@@ -1,65 +1,98 @@
-# 🚀 RelevAI — Resume Relevance Checker
+# SkillSyncer / RelevAI — Resume Relevance Checker
 
-📌 Project Overview
-The Resume Evaluator is a full‑stack application that helps both students and recruiters (HR) by analyzing resumes against specific job roles. It provides a score based on skill matching, experience, and job description alignment, along with actionable suggestions for improvement.
-The system is designed to streamline the hiring process for recruiters and guide students in tailoring their resumes for better opportunities.
+A full-stack resume-evaluation project that compares resumes with job requirements and provides relevance scoring and improvement feedback for candidate and recruiter workflows.
 
-🚀 Features
-- Dual Views:
-- 🎓 Student View – Upload resume, select job role, and receive feedback + improvement suggestions
-- 🧑‍💼 Recruiter View – Evaluate resumes against job descriptions with scoring and insights
-- Scoring Engine: Skill matching, experience relevance, and JD alignment
-- Suggestions: Personalized recommendations for both HR and students
-- Database Integration: Resume history stored in SQL for future analysis and reporting
-- Fast & Interactive UI: Built with Streamlit for a smooth user experience
+## Overview
 
-🛠️ Tech Stack & Libraries
-Frontend
-- Streamlit – interactive dashboards for students & recruiters
-Backend
-- FastAPI (fastapi==0.111.0) – REST API for resume parsing, scoring, and suggestions
-- Uvicorn (uvicorn[standard]==0.30.1) – ASGI server
-- Python‑Multipart (python-multipart==0.0.9) – file upload handling
-Resume Parsing & Processing
-- pdfplumber (0.11.4) – extract text from PDF resumes
-- PyMuPDF (pymupdf==1.24.9) – advanced PDF parsing
-- docx2txt – extract text from DOCX resumes
-NLP & Machine Learning
-- spaCy (3.7.5) – NLP pipeline for text preprocessing
-- rapidfuzz (3.9.6) – fuzzy string matching for skills
-- sentence-transformers (3.0.1) – semantic embeddings for JD‑resume alignment
-- scikit-learn (1.5.1) – preprocessing, scoring logic, evaluation
-- numpy (1.26.4) – numerical computations
-Database & ORM
-- SQLAlchemy (2.0.32) – ORM for SQL database integration
-- Pydantic (2.8.2) – data validation and schema management
-AI/LLM Integrations
-- LangChain – orchestration of LLM workflows
-- LangGraph – graph‑based reasoning for evaluation pipelines
-- ChromaDB – vector database for embeddings storage
-- langchain-google-genai – integration with Google Generative AI
-- google-generativeai – LLM‑powered suggestions
+The repository combines a **FastAPI backend** with a **Streamlit frontend**. The project is designed around resume parsing, job-description alignment, semantic matching and feedback generation.
 
-📈 Workflow
-- Student uploads resume + selects job role
-- FastAPI backend parses resume and compares it with job description
-- Scoring engine evaluates skills, experience, and JD alignment
-- Suggestions generated for both students (resume improvement) and HR (candidate fit)
-- Results stored in SQL database for future analysis
+## Core Capabilities
 
-👤 Contributor
-- Raushan Kumar – Full‑stack ML Developer & AI Workflow Architect
-- Implemented Streamlit frontend, FastAPI backend, resume parsing pipeline, scoring engine, SQL database integration, and LLM‑powered suggestions
+- Student-oriented resume evaluation workflow
+- Recruiter-oriented candidate/job-description comparison
+- Resume parsing for common document formats
+- Skill and text matching
+- Semantic similarity / embedding-based alignment
+- Scoring and feedback workflow
+- Database-backed result/history support in the application design
+- LLM-oriented integration experiments for suggestions
 
+## Repository Structure
 
-## 🛠️ Installation
--**env**:add .env file before running this which contain GEMNINI_API_KEY
+```text
+SkillSyncer/
+├── backend/
+│   └── app/               # FastAPI/backend application code
+├── frontend/
+│   ├── components/        # Streamlit UI components
+│   ├── dashboard.py       # Frontend entry point
+│   └── requirements.txt
+├── .devcontainer/         # Development-container configuration
+├── .gitignore
+└── README.md
+```
+
+## Technologies Used
+
+The project includes or experiments with technologies such as:
+
+- Python
+- FastAPI + Uvicorn
+- Streamlit
+- Pydantic / SQLAlchemy
+- PDF/DOCX parsing libraries
+- spaCy and RapidFuzz
+- sentence-transformers / scikit-learn
+- LangChain / LangGraph
+- ChromaDB
+- Google Generative AI integration
+
+Exact dependencies should be taken from the requirement files and application code in the relevant component.
+
+## Local Setup
+
+### Backend
+
+From the repository root, enter the backend environment and install its required dependencies according to the backend configuration, then run the FastAPI application. The intended application module is under `backend/app/`.
+
+A typical development command is:
 
 ```bash
-cd backend
-pip install -r requirements.txt
 uvicorn app.main:app --reload
+```
 
+Run it from the directory/environment where the `app` package and backend dependencies are available.
+
+### Frontend
+
+```bash
 cd frontend
 pip install -r requirements.txt
 streamlit run dashboard.py
+```
+
+## Environment Variables
+
+Some AI-assisted features may require provider credentials. Keep keys in local environment variables or a `.env` file; never commit real credentials.
+
+Example:
+
+```text
+GEMINI_API_KEY=your_key_here
+```
+
+The repository `.gitignore` excludes local environment files and Python cache artifacts.
+
+## Responsible Use
+
+Resume relevance scores should be treated as decision-support signals, not as an autonomous hiring decision. Human review is necessary, especially where incomplete resumes, unusual career paths or biased job descriptions could affect automated matching.
+
+## Development Notes
+
+- Generated Python bytecode/cache files are intentionally excluded from version control.
+- Keep model/provider credentials outside Git.
+- Add automated tests and a documented backend requirements file if the application is prepared for deployment.
+
+## Author
+
+Maintained by [@rkmaurya93049](https://github.com/rkmaurya93049).

@@ -1,6 +1,7 @@
 import os
 import re
 from functools import lru_cache
+from typing import Any
 
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -24,7 +25,44 @@ def get_model():
     )
 
 
+def _content_to_text(content: Any) -> str:
+    """Normalize LangChain/Gemini message content into plain text.
+
+    Newer Gemini/LangChain versions can return either a plain string or a
+    list of structured content blocks. The suggestion parser only needs the
+    textual portions, so collect them safely before applying regex parsing.
+    """
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, bytes):
+        return content.decode("utf-8", errors="replace")
+
+    if isinstance(content, (list, tuple)):
+        parts: list[str] = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+                continue
+            if isinstance(item, dict):
+                text = item.get("text") or item.get("content")
+                if isinstance(text, str):
+                    parts.append(text)
+                continue
+
+            text = getattr(item, "text", None)
+            if isinstance(text, str):
+                parts.append(text)
+
+        return "\n".join(part for part in parts if part).strip()
+
+    return str(content)
+
+
 def parse_suggestion(text: str, max_per_section: int = 5) -> dict:
+    text = _content_to_text(text)
+
     def extract_section(header: str) -> list:
         pattern = rf"{re.escape(header)}.*?:\s*(.*?)(?:\n\n|\Z)"
         match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
@@ -85,7 +123,8 @@ Experience Suggestions:
 
     try:
         response = model.invoke(prompt)
-        parsed = parse_suggestion(response.content)
+        response_text = _content_to_text(response.content)
+        parsed = parse_suggestion(response_text)
         if not any(parsed.values()):
             return _fallback_suggestions(missing_skills, role, error="Gemini returned an unparseable response.")
         parsed["error"] = None

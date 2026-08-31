@@ -20,7 +20,7 @@ def get_model():
         model=os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL),
         temperature=0.1,
         max_output_tokens=1000,
-        google_api_key=api_key,
+        api_key=api_key,
     )
 
 
